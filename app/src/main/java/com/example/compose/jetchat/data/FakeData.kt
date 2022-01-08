@@ -21,7 +21,8 @@ import com.example.compose.jetchat.conversation.ConversationUiState
 import com.example.compose.jetchat.conversation.Message
 import com.example.compose.jetchat.profile.ProfileScreenState
 
-private val initialMessages = listOf(
+
+val data = listOf(
     Message(
         "me",
         "Check it out!",
@@ -60,6 +61,8 @@ private val initialMessages = listOf(
     )
 )
 
+
+private val initialMessages =  data + data + data
 val exampleUiState = ConversationUiState(
     initialMessages = initialMessages,
     channelName = "#composers",

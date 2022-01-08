@@ -6,21 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import com.example.compose.jetchat.MainViewModel
+import com.example.compose.jetchat.R
+import com.example.compose.jetchat.data.exampleUiState
 import com.example.compose.jetchat.ui.theme.JetChatAppTheme
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.ViewWindowInsetObserver
 
-class ConversationFragment: Fragment() {
+class ConversationFragment : Fragment() {
 
     private val activityViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val composeView = ComposeView(inflater.context).apply {
 
@@ -33,13 +37,26 @@ class ConversationFragment: Fragment() {
                 // on-screen keyboard (IME) as it enters/exits the screen.
                 .start(windowInsetsAnimationsEnabled = true)
 
-            setContent{
+            setContent {
 
                 CompositionLocalProvider(
                     LocalBackPressedDispatcher provides requireActivity().onBackPressedDispatcher,
                     LocalWindowInsets provides windowInsets,
                 ) {
                     JetChatAppTheme {
+                        ConversationContent(
+                            uiState = exampleUiState,
+                            navigateToProfile = { user ->
+                                val bundle = bundleOf("userId" to user)
+                                findNavController().navigate(
+                                    R.id.nav_profile,
+                                    bundle
+                                )
+                            },
+                            onNavIconPressed = {
+                                activityViewModel.openDrawer()
+                            },
+                        )
                     }
                 }
 
