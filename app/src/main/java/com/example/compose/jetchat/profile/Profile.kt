@@ -28,6 +28,7 @@ import com.google.accompanist.insets.statusBarsPadding
 @Composable
 fun ProfileScreen(
     userData: ProfileScreenState,
+    onNavIconPressed: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     Column {
@@ -35,9 +36,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding(),
-            onNavIconPressed = {
-
-            },
+            onNavIconPressed = onNavIconPressed,
             title = {
 
             },
@@ -165,6 +164,12 @@ fun Position(
             style = MaterialTheme.typography.body1
         )
     }
+}
+
+@Composable
+fun ProfileError(
+) {
+    Text(stringResource(R.string.profile_error))
 }
 
 @Preview

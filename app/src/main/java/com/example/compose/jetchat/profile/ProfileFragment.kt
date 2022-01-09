@@ -1,23 +1,30 @@
 package com.example.compose.jetchat.profile
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.Text
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.example.compose.jetchat.MainViewModel
-import com.example.compose.jetchat.conversation.LocalBackPressedDispatcher
-import com.example.compose.jetchat.ui.theme.JetChatAppTheme
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.ViewWindowInsetObserver
 
 class ProfileFragment : Fragment() {
+    private val viewModel: ProfileViewModel by viewModels()
     private val activityViewModel: MainViewModel by activityViewModels()
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val userId = arguments?.getString("userId")
+        viewModel.setUserId(userId)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,16 +42,16 @@ class ProfileFragment : Fragment() {
                 .start(windowInsetsAnimationsEnabled = true)
 
             setContent {
-
-                CompositionLocalProvider(
-                    LocalBackPressedDispatcher provides requireActivity().onBackPressedDispatcher,
-                    LocalWindowInsets provides windowInsets,
-                ) {
-                    JetChatAppTheme {
-                        Text("This is profile fragment")
+                val userData by viewModel.userData.observeAsState()
+                CompositionLocalProvider(LocalWindowInsets provides windowInsets) {
+                    if (userData == null) {
+                        ProfileError()
+                    } else {
+                        ProfileScreen(userData = userData!!, onNavIconPressed = {
+                            activityViewModel.openDrawer()
+                        })
                     }
                 }
-
             }
         }
         return composeView

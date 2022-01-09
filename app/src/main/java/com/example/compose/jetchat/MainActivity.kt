@@ -9,9 +9,13 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.core.os.bundleOf
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.compose.jetchat.components.JetChatScaffold
 import com.example.compose.jetchat.databinding.ContentMainBinding
 import com.example.compose.jetchat.ui.theme.JetChatAppTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -36,12 +40,30 @@ class MainActivity : AppCompatActivity() {
 
             JetChatScaffold(
                 scaffoldState = scaffoldState,
-                onProfileClicked = {},
-                onChatClicked = {}) {
+                onProfileClicked = {
+                    val bundle = bundleOf("userId" to it)
+                    findNavController().navigate(R.id.nav_profile, bundle)
+                    scope.launch {
+                        scaffoldState.drawerState.close()
+                    }
+                },
+                onChatClicked = {
+                    val bundle = bundleOf("userId" to it)
+                    findNavController().navigate(R.id.nav_profile, bundle)
+                    scope.launch {
+                        scaffoldState.drawerState.close()
+                    }
+                }) {
 
                 AndroidViewBinding(ContentMainBinding::inflate)
             }
         }
+    }
+
+    private fun findNavController(): NavController {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        return navHostFragment.navController
     }
 }
 
